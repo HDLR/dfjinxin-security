@@ -1,0 +1,14 @@
+version: '2'
+services:
+  dfjinxin-admin:
+    image: dfjinxin/admin
+    ports:
+      - "8080:8080"
+    environment:
+      - spring.profiles.active=dev
+  dfjinxin-api:
+    image: dfjinxin/api
+    ports:
+      - "8081:8081"
+    environment:
+      - spring.profiles.active=dev
