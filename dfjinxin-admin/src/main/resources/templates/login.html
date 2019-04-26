@@ -1,118 +1,112 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>东方金信权限系统</title>
-  <!-- Tell the browser to be responsive to screen width -->
-  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-  <link rel="stylesheet" href="${request.contextPath}/statics/css/bootstrap.min.css">
-  <link rel="stylesheet" href="${request.contextPath}/statics/css/font-awesome.min.css">
-  <link rel="stylesheet" href="${request.contextPath}/statics/css/AdminLTE.min.css">
-  <!-- AdminLTE Skins. Choose a skin from the css/skins
-       folder instead of downloading all of them to reduce the load. -->
-  <link rel="stylesheet" href="${request.contextPath}/statics/css/all-skins.min.css">
-  <link rel="stylesheet" href="${request.contextPath}/statics/css/main.css">
-  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-  <!--[if lt IE 9]>
-  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-  <![endif]-->
+<title>东方金信权限系统</title>
+<#include "/public/header.html">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/login/login.css">
 </head>
-<body class="hold-transition login-page">
-<div class="login-box" id="rrapp" v-cloak>
-  <div class="login-logo">
-    <b>东方金信权限系统</b>
-  </div>
-  <!-- /.login-logo -->
-  <div class="login-box-body">
-      <p class="login-box-msg">管理员登录</p>
-      <div v-if="error" class="alert alert-danger alert-dismissible">
-        <h4 style="margin-bottom: 0px;"><i class="fa fa-exclamation-triangle"></i> {{errorMsg}}</h4>
-      </div>
-      <div class="form-group has-feedback">
-        <input type="text" class="form-control" v-model="username" placeholder="账号">
-        <span class="glyphicon glyphicon-user form-control-feedback"></span>
-      </div>
-      <div class="form-group has-feedback">
-        <input type="password" class="form-control" v-model="password" placeholder="密码">
-        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-      </div>
-      <div class="form-group has-feedback">
-        <input type="text" class="form-control" v-model="captcha" @keyup.enter="login" placeholder="验证码">
-        <span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
-      </div>
-      <div class="form-group has-feedback">
-        <img alt="如果看不清楚，请单击图片刷新！" class="pointer" :src="src" @click="refreshCode">
-        &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:;" @click="refreshCode">点击刷新</a>
-      </div>
-      
-      
-      <div class="row">
-        <div class="col-xs-8">
-          <div class="checkbox icheck">
-          </div>
+<body>
+<div id="rrapp" class="site-wrapper site-page--login">
+    <div class="site-content__wrapper">
+        <div class="site-content">
+            <div class="brand-info">
+                <h2 class="brand-info__text">东方金信</h2>
+                <p class="brand-info__intro">基于springboot、vue.js快速开发的权限管理系统</p>
+            </div>
+            <div class="login-main">
+                <h3 class="login-title">管理员登录</h3>
+                <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" status-icon>
+                    <el-form-item prop="userName">
+                        <el-input v-model="dataForm.userName" placeholder="帐号"></el-input>
+                    </el-form-item>
+                    <el-form-item prop="password">
+                        <el-input v-model="dataForm.password" type="password" placeholder="密码"></el-input>
+                    </el-form-item>
+                    <!--<el-form-item prop="captcha">-->
+                        <!--<el-row :gutter="20">-->
+                            <!--<el-col :span="14">-->
+                                <!--<el-input v-model="dataForm.captcha" placeholder="验证码">-->
+                                <!--</el-input>-->
+                            <!--</el-col>-->
+                            <!--<el-col :span="10" class="login-captcha">-->
+                                <!--<img :src="captchaPath" @click="getCaptcha()" alt="">-->
+                            <!--</el-col>-->
+                        <!--</el-row>-->
+                    <!--</el-form-item>-->
+                    <el-form-item>
+                        <el-button class="login-btn-submit" type="primary" @click="dataFormSubmit()">登录</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
         </div>
-        <!-- /.col -->
-        <div class="col-xs-4">
-          <button type="button" class="btn btn-primary btn-block btn-flat" @click="login">登录</button>
-        </div>
-        <!-- /.col -->
-      </div>
-    <!-- /.social-auth-links -->
-
-  </div>
-  <!-- /.login-box-body -->
+    </div>
 </div>
 <!-- /.login-box -->
-<script src="${request.contextPath}/statics/libs/jquery.min.js"></script>
-<script src="${request.contextPath}/statics/libs/vue.min.js"></script>
-<script src="${request.contextPath}/statics/libs/bootstrap.min.js"></script>
-<script src="${request.contextPath}/statics/libs/jquery.slimscroll.min.js"></script>
-<script src="${request.contextPath}/statics/libs/fastclick.min.js"></script>
-<script src="${request.contextPath}/statics/libs/app.js"></script>
+<!--<script src="${request.contextPath}/statics/libs/jquery.min.js"></script>-->
 <script type="text/javascript">
-var vm = new Vue({
-	el:'#rrapp',
-	data:{
-		username: '',
-		password: '',
-		captcha: '',
-		error: false,
-		errorMsg: '',
-		src: 'captcha.jpg'
-	},
-	beforeCreate: function(){
-		if(self != top){
-			top.location.href = self.location.href;
-		}
-	},
-	methods: {
-		refreshCode: function(){
-			this.src = "captcha.jpg?t=" + $.now();
-		},
-		login: function (event) {
-			var data = "username="+vm.username+"&password="+vm.password+"&captcha="+vm.captcha;
-			$.ajax({
-				type: "POST",
-			    url: "sys/login",
-			    data: data,
-			    dataType: "json",
-			    success: function(result){
-					if(result.code == 0){//登录成功
-						parent.location.href ='index.html';
-					}else{
-						vm.error = true;
-						vm.errorMsg = result.msg;
-						
-						vm.refreshCode();
-					}
-				}
-			});
-		}
-	}
-});
+    var vm = new Vue({
+        el:'#rrapp',
+        data () {
+            return {
+                dataForm: {
+                    userName: 'admin',
+                    password: 'admin',
+                    uuid: '',
+                    captcha: ''
+                },
+                dataRule: {
+                    userName: [
+                        { required: true, message: '帐号不能为空', trigger: 'blur' }
+                    ],
+                    password: [
+                        { required: true, message: '密码不能为空', trigger: 'blur' }
+                    ],
+                    // captcha: [
+                    //     { required: true, message: '验证码不能为空', trigger: 'blur' }
+                    // ]
+                },
+                captchaPath: ''
+            }
+        },
+        beforeCreate: function(){
+            if(self != top){
+                top.location.href = self.location.href;
+            }
+        },
+        methods: {
+            // 提交表单
+            dataFormSubmit () {
+                this.$refs['dataForm'].validate((valid) => {
+                    if (valid) {
+                        ajaxFunctionPost("/sys/login",
+                            {
+                                'username': this.dataForm.userName,
+                                'password': this.dataForm.password,
+                                'uuid': this.dataForm.uuid,
+                                'captcha': this.dataForm.captcha
+                            },
+                            function(res){
+                                if(res.code === 0){
+                                    vm.$message({showClose: true, message: '登录成功', type: 'success'});
+                                    parent.location.href ='index.html';
+                                }else{
+                                    vm.$message({showClose: true, message: res.msg, type: 'error'});
+                                }
+                            },
+                            function(res){
+                                vm.$message({showClose: true, message: res.msg, type: 'error'});
+                            }
+                        )
+                    }
+                })
+            },
+        },
+        mounted: function(){
+            this.$nextTick(function(){
+                // vm.dataFormSubmit()
+            })
+        }
+    });
 </script>
 </body>
 </html>
